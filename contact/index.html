@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      margin: 40px;
+      color: #333;
+    }
+
+    h1,
+    h2 {
+      color: #111;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="contactCanvas" aria-label="Contact Page" role="img"></canvas>
+
+  <script>
+    const content = [
+      { type: 'h1', text: 'Contact' },
+      { type: 'p', text: 'We are here to help and answer any questions you may have. Please reach out to us through one of the methods below and we will respond as soon as possible.' },
+
+      { type: 'h2', text: '1. Customer Support' },
+      { type: 'p', text: 'For product inquiries, returns, or general questions, please email our support team at support@example.com.' },
+
+      { type: 'h2', text: '2. Phone' },
+      { type: 'p', text: 'You can contact us by phone during business hours at: +1 (800) 123-4567.' },
+
+      { type: 'h2', text: '3. Business Hours' },
+      { type: 'p', text: 'Our support team is available Monday to Friday, from 9:00 AM to 6:00 PM (EST).' },
+
+      { type: 'h2', text: '4. Mailing Address' },
+      { type: 'p', text: '123 Main Street, Suite 400, New York, NY 10001, USA' },
+
+      { type: 'h2', text: '5. Social Media' },
+      { type: 'p', text: 'You can also reach us via our official social media channels for updates and support.' },
+
+      { type: 'p-muted', text: 'Last updated: 2025-08-26' }
+    ];
+
+    const canvas = document.getElementById('contactCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const DPR = window.devicePixelRatio || 1;
+    const PAGE = { paddingX: 20, paddingY: 30, maxWidth: 1000 };
+
+    const styles = {
+      h1: { size: 28, weight: '700', lh: 1.25, mt: 0, mb: 16, color: '#111' },
+      h2: { size: 18, weight: '700', lh: 1.4, mt: 28, mb: 8, color: '#111' },
+      p: { size: 16, weight: '400', lh: 1.7, mt: 0, mb: 14, color: '#333' },
+      'p-muted': { size: 15, weight: '400', lh: 1.7, mt: 8, mb: 0, color: '#6b7280', italic: true }
+    };
+
+    function setFont(s) {
+      ctx.font = `${s.italic ? 'italic ' : ''}${s.weight} ${s.size}px Arial, Helvetica, sans-serif`;
+    }
+
+    function wrap(text, maxWidth) {
+      const words = text.split(/\s+/);
+      const lines = [];
+      let line = '';
+      for (let w of words) {
+        const test = line ? line + ' ' + w : w;
+        if (ctx.measureText(test).width <= maxWidth) line = test;
+        else { if (line) lines.push(line); line = w; }
+      }
+      if (line) lines.push(line);
+      return lines;
+    }
+
+    function render() {
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      let cssWidth = Math.min(PAGE.maxWidth, canvas.parentElement.clientWidth);
+      const contentWidth = cssWidth - PAGE.paddingX * 2;
+
+      // measure
+      let y = PAGE.paddingY;
+      const linesPerBlock = [];
+      for (const b of content) {
+        const s = styles[b.type];
+        setFont(s);
+        y += s.mt;
+        const lines = wrap(b.text, contentWidth);
+        linesPerBlock.push({ s, lines });
+        y += lines.length * (s.size * s.lh);
+        y += s.mb;
+      }
+      y += PAGE.paddingY;
+
+      // resize canvas
+      canvas.width = cssWidth * DPR;
+      canvas.height = y * DPR;
+      canvas.style.width = cssWidth + 'px';
+      canvas.style.height = y + 'px';
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+
+      // draw
+      y = PAGE.paddingY;
+      for (let i = 0; i < content.length; i++) {
+        const { s, lines } = linesPerBlock[i];
+        setFont(s);
+        ctx.fillStyle = s.color;
+        y += s.mt;
+        for (const line of lines) {
+          y += s.size * s.lh;
+          ctx.fillText(line, PAGE.paddingX, y);
+        }
+        y += s.mb;
+      }
+    }
+
+    render();
+    window.addEventListener('resize', () => { clearTimeout(window.rz); window.rz = setTimeout(render, 100); });
+  </script>
+</body>
+
+</html>
