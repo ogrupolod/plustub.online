@@ -3,53 +3,78 @@
     <html lang="pt-BR" dir="ltr">
     <head>
 
-  <style>
-    .esconder { display: none; }
-  </style>
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      var SECONDS_TO_DISPLAY = 3; // mude aqui
-      var CLASS_TO_DISPLAY = ".esconder";
-      var elsHiddenList = Array.prototype.slice.call(document.querySelectorAll(CLASS_TO_DISPLAY));
-      var alreadyDisplayedKey = "alreadyElsDisplayed" + SECONDS_TO_DISPLAY;
+<style>
+  /* Tudo que tiver essa classe começa escondido */
+  .esconder { display: none; }
 
-      function showHiddenElements() {
-        elsHiddenList.forEach(function (el) { el.style.display = "block"; });
-        try { localStorage.setItem(alreadyDisplayedKey, "true"); } catch (e) {}
+  /* Estilos básicos do acordeão */
+  .accordion {
+    cursor: pointer;
+    padding: 10px;
+    border: 1px solid #ccc;
+    text-align: left;
+    outline: none;
+    transition: background-color 0.3s;
+  }
+
+  .accordion.active {
+    background-color: #eee;
+  }
+
+  .panel {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+</style>
+
+<!-- Script do DELAY -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  var SECONDS_TO_DISPLAY = 3; // ajuste aqui
+  var elsHiddenList = Array.prototype.slice.call(document.querySelectorAll(".esconder"));
+  var key = "alreadyElsDisplayed" + SECONDS_TO_DISPLAY;
+
+  function showHidden() {
+    elsHiddenList.forEach(function (el) { el.style.display = "block"; });
+    try { localStorage.setItem(key, "true"); } catch(e){}
+  }
+
+  var already = null;
+  try { already = localStorage.getItem(key); } catch(e){}
+
+  if (already === "true") {
+    setTimeout(showHidden, 100);
+  } else {
+    setTimeout(showHidden, SECONDS_TO_DISPLAY * 1000);
+  }
+});
+</script>
+
+<!-- Script do ACORDEÃO -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  var acc = document.getElementsByClassName("accordion");
+  for (let i = 0; i < acc.length; i++) {
+    acc[i].addEventListener("click", function () {
+      for (let j = 0; j < acc.length; j++) {
+        acc[j].classList.remove("active");
+        if (j != i) acc[j].nextElementSibling.style.maxHeight = null;
       }
-
-      var already = null;
-      try { already = localStorage.getItem(alreadyDisplayedKey); } catch (e) {}
-
-      if (already === "true") {
-        setTimeout(showHiddenElements, 100);
-      } else {
-        setTimeout(showHiddenElements, SECONDS_TO_DISPLAY * 1000);
-      }
+      this.classList.add("active");
+      var panel = this.nextElementSibling;
+      panel.style.maxHeight = panel.style.maxHeight ? null : (panel.scrollHeight + "px");
     });
-  </script>
+  }
+});
+</script>
 
-            <script class=esconder>
-        var acc = document.getElementsByClassName("accordion");
-        for (let i = 0; i < acc.length; i++) {
-            acc[i].addEventListener("click", function () {
-                for (let j = 0; j < acc.length; j++) {
-                    acc[j].classList.remove("active");
-                    if (j != i) {
-                        acc[j].nextElementSibling.style.maxHeight = null;
-                    }
-                }
-                this.classList.add("active");
-                var panel = this.nextElementSibling;
-                if (panel.style.maxHeight) {
-                    panel.style.maxHeight = null;
+<!-- EXEMPLO DE USO -->
+<button class="accordion">Abrir conteúdo</button>
+<div class="panel esconder">
+  <p>Esse conteúdo só aparece após 3 segundos.</p>
+</div>
 
-                } else {
-                    panel.style.maxHeight = panel.scrollHeight + "px";
-                }
-            });
-        }
-    </script>
 
         
       <title>Concentration & Memory Booster</title><meta name="robots" content="index, follow"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" /><meta name="description" content="A balanced supplement for memory, concentration, and brain wellness—crafted to help students and professionals perform at their best.""><meta http-equiv="X-Content-Type-Options" content="nosniff"><meta http-equiv="X-XSS-Protection" content="1; mode=block"><meta name="referrer" content="strict-origin-when-cross-origin"><meta name="author" content="The Memory Collective"><style type="text/css" media="all">
